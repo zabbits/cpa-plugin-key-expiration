@@ -1,0 +1,29 @@
+[package]
+name = "cpa-plugin-key-expiration"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+description = "Expiration and revocation for CLIProxyAPI client API keys"
+license = "MIT"
+repository = "https://github.com/zabbits/cpa-plugin-key-expiration"
+
+[lib]
+name = "key_expiration"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+base64 = "0.22"
+jiff = { version = "0.2", default-features = false, features = ["std", "serde"] }
+rusqlite = { version = "0.38", features = ["bundled"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_yaml_ng = "0.10"
+sha2 = "0.10"
+
+[dev-dependencies]
+tempfile = "3"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = "debuginfo"

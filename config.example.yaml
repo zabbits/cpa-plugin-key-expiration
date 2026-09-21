@@ -1,0 +1,8 @@
+# Merge this section into the CPA configuration that the server actually uses.
+plugins:
+  enabled: true
+  dir: ./plugins
+  configs:
+    key-expiration:
+      enabled: true
+      database_path: ./plugins/key-expiration.sqlite3

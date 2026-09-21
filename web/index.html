@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Key 有效期</title>
+    <link rel="stylesheet" href="./style.css">
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <main>
+      <p id="error" class="notice error" role="alert" hidden></p>
+      <section id="login" class="login" hidden>
+        <form id="login-form">
+          <label for="credential">管理密钥</label>
+          <div class="login-controls">
+            <input id="credential" type="password" autocomplete="current-password" required>
+            <button type="submit" class="primary">连接</button>
+          </div>
+        </form>
+      </section>
+      <section id="content" aria-label="API Keys" hidden>
+        <div class="toolbar">
+          <div class="search-field">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+            <input id="search" type="search" placeholder="搜索 Key" aria-label="搜索 Key" autocomplete="off">
+          </div>
+          <div class="toolbar-actions">
+            <div class="filter-field">
+              <select id="filter" aria-label="筛选状态">
+                <option value="all">全部状态</option>
+                <option value="active">有效</option>
+                <option value="expired">已过期</option>
+                <option value="disabled">已禁用</option>
+              </select>
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 10 4 4 4-4"/></svg>
+            </div>
+            <button id="refresh" class="icon-button" type="button" aria-label="刷新" title="刷新">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M19.1 7a8 8 0 1 0 .4 9M20 12l-3-3"/></svg>
+            </button>
+          </div>
+        </div>
+        <div id="keys" class="key-list"></div>
+        <p id="empty" class="empty" hidden>暂无 Key</p>
+      </section>
+      <p id="loading" class="empty" role="status">加载中…</p>
+      <p id="toast" class="toast" role="status" hidden></p>
+    </main>
+    <dialog id="editor" aria-labelledby="editor-title">
+      <form id="edit-form">
+        <h2 id="editor-title">设置有效期</h2>
+        <p id="editing-key" class="key-preview"></p>
+        <label class="permanent-setting" for="permanent">
+          <span>永不过期</span>
+          <input id="permanent" type="checkbox" role="switch">
+        </label>
+        <fieldset id="date-picker" class="date-picker">
+          <legend class="visually-hidden">到期时间</legend>
+          <div class="calendar-heading">
+            <span id="calendar-month" data-month-label aria-live="polite"></span>
+            <div class="calendar-navigation">
+              <button type="button" class="calendar-today" data-today>今天</button>
+              <button type="button" class="icon-button" data-previous aria-label="上个月" title="上个月">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 7-5 5 5 5"/></svg>
+              </button>
+              <button type="button" class="icon-button" data-next aria-label="下个月" title="下个月">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m10 7 5 5-5 5"/></svg>
+              </button>
+            </div>
+          </div>
+          <div data-calendar-grid class="calendar-grid" role="grid" aria-labelledby="calendar-month"></div>
+          <div class="calendar-time">
+            <span>时间</span>
+            <div class="time-fields" role="group" aria-label="到期时刻">
+              <input data-hour type="text" inputmode="numeric" maxlength="2" aria-label="小时" autocomplete="off">
+              <span aria-hidden="true">:</span>
+              <input data-minute type="text" inputmode="numeric" maxlength="2" aria-label="分钟" autocomplete="off">
+              <span aria-hidden="true">:</span>
+              <input data-second type="text" inputmode="numeric" maxlength="2" aria-label="秒" autocomplete="off">
+            </div>
+          </div>
+        </fieldset>
+        <p id="edit-error" class="notice error" role="alert" hidden></p>
+        <div class="dialog-actions">
+          <button id="cancel" type="button">取消</button>
+          <button id="save" type="submit" class="primary">保存</button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>
