@@ -116,8 +116,8 @@ function render() {
     identity.append(element('span', key.id.slice(0, 10), 'key-id'));
     const status = statusOf(key);
     card.dataset.status = status;
+    card.setAttribute('aria-description', labels[status]);
     header.append(symbol, identity);
-    const badge = element('span', labels[status], `badge ${status}`);
     const expiry = element('dl', undefined, 'key-expiry');
     const expiryValue = element('dd');
     if (key.policy.expires_at) {
@@ -142,7 +142,7 @@ function render() {
       button.append(icon(action === 'edit' ? 'calendar' : key.policy.disabled ? 'play' : 'pause'));
       actions.append(button);
     }
-    card.append(header, actions, expiry, badge);
+    card.append(header, actions, expiry);
     return card;
   });
   $('keys').replaceChildren(...cards);
