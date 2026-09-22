@@ -1,6 +1,8 @@
-name: Linux build
+name: Linux build and release
 on:
   push:
+    branches: ['**']
+    tags: ['v*']
   pull_request:
   workflow_dispatch:
 
@@ -9,7 +11,7 @@ permissions:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref_type != 'tag' }}
 
 env:
   CARGO_TERM_COLOR: always
@@ -40,6 +42,21 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
+      - name: Validate release version
+        if: github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          import tomllib
+
+          version = tomllib.loads(Path('Cargo.toml').read_text())['package']['version']
+          expected = f'v{version}'
+          if os.environ['RELEASE_TAG'] != expected:
+              raise SystemExit(f'Release tag must match Cargo.toml version: {expected}')
+          PY
       - uses: actions/setup-node@v6
         with:
           node-version: '22'
@@ -70,3 +87,43 @@ jobs:
           if-no-files-found: error
           compression-level: 0
           retention-days: 30
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    if: github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Download Linux packages
+        uses: actions/download-artifact@v8
+        with:
+          pattern: key-expiration-linux-*
+          merge-multiple: true
+          path: dist
+      - name: Verify release assets
+        working-directory: dist
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          version="${RELEASE_TAG#v}"
+          for arch in amd64 arm64; do
+            archive="key-expiration_${version}_linux_${arch}.zip"
+            test -f "$archive"
+            sha256sum --check "$archive.sha256"
+          done
+      - name: Publish release assets
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          fail_on_unmatched_files: true
+          files: |
+            dist/*_linux_amd64.zip
+            dist/*_linux_amd64.zip.sha256
+            dist/*_linux_arm64.zip
+            dist/*_linux_arm64.zip.sha256
