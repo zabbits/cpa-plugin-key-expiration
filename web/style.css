@@ -31,8 +31,6 @@ input::placeholder { color: var(--ke-muted); }
 .icon { display: block; width: 20px; height: 20px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 1.65; stroke-linecap: round; stroke-linejoin: round; }
 .icon-button { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 44px; width: 44px; height: 44px; min-height: 44px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--ke-secondary); }
 .icon-button:hover:not(:disabled) { background: var(--ke-soft-fill); color: var(--ke-blue); }
-.icon-button.danger:hover:not(:disabled) { background: color-mix(in srgb, var(--ke-red) 7%, var(--ke-surface)); color: var(--ke-red); }
-.icon-button.enable:hover:not(:disabled) { background: color-mix(in srgb, var(--ke-green) 7%, var(--ke-surface)); color: var(--ke-green); }
 .toolbar, .toolbar-actions { display: flex; align-items: center; }
 .toolbar { justify-content: space-between; gap: 16px; margin-bottom: 24px; }
 .toolbar-actions { gap: 16px; }
@@ -47,25 +45,27 @@ input::placeholder { color: var(--ke-muted); }
 #refresh { flex-basis: 40px; width: 40px; height: 40px; min-height: 40px; }
 #refresh:hover:not(:disabled) { background: var(--ke-fill); }
 .key-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 16px; }
-.key-card { --key-text-inset: 44px; --key-action-size: 32px; --key-icon-size: 18px; display: grid; grid-template-columns: minmax(0, 1fr) 72px; grid-template-rows: 40px 44px; align-items: center; gap: 12px; min-width: 0; padding: 16px; border-radius: 18px; background: var(--ke-surface); box-shadow: var(--ke-shadow); }
-/* Both text groups share an inset; status shares the title's first baseline. */
-.key-card-header { position: relative; grid-column: 1; grid-row: 1; align-self: first baseline; min-width: 0; padding-left: var(--key-text-inset); background: transparent; }
-.key-symbol { position: absolute; top: 4px; left: 0; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 10px; background: var(--ke-soft-fill); color: var(--ke-secondary); }
+.key-card { --key-text-inset: 44px; --key-action-size: 32px; --key-icon-size: 18px; --key-status-color: var(--ke-green); display: grid; grid-template-columns: minmax(0, 1fr) 72px; grid-template-rows: 48px 36px; align-items: center; gap: 12px; min-width: 0; padding: 16px; border-radius: 18px; background: var(--ke-surface); box-shadow: var(--ke-shadow); }
+.key-card[data-status=expired] { --key-status-color: var(--ke-orange); }
+.key-card[data-status=disabled] { --key-status-color: var(--ke-red); }
+/* Key, identifier and expiration share the same text inset. */
+.key-card-header { position: relative; grid-column: 1; grid-row: 1; min-width: 0; padding-left: var(--key-text-inset); background: transparent; }
+.key-symbol { position: absolute; top: 0; left: 0; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 10px; background: var(--ke-soft-fill); color: var(--ke-secondary); }
 .key-symbol .icon { width: 18px; height: 18px; }
 .key-identity { min-width: 0; }
-.key-value { margin: 0; overflow: hidden; color: var(--ke-text); font-size: 14px; line-height: 20px; font-weight: 600; letter-spacing: .1px; text-overflow: ellipsis; white-space: nowrap; }
-.key-id { display: block; margin-top: 4px; font: 10px/16px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .4px; color: var(--ke-muted); }
-.badge { grid-column: 2; grid-row: 1; align-self: first baseline; justify-self: end; display: inline-flex; align-items: center; gap: 6px; padding-right: calc((var(--key-action-size) - var(--key-icon-size)) / 2); color: var(--ke-secondary); font-size: 11px; line-height: 20px; white-space: nowrap; }
-.badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--ke-muted); }
-.badge.active::before { background: var(--ke-green); }
-.badge.expired::before { background: var(--ke-orange); }
+.key-value { margin: 0; overflow: hidden; color: var(--ke-text); font-size: 14px; line-height: var(--key-action-size); font-weight: 600; letter-spacing: .1px; text-overflow: ellipsis; white-space: nowrap; }
+.key-id { display: block; font: 10px/16px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .4px; color: var(--ke-muted); }
+.badge { grid-column: 2; grid-row: 2; align-self: end; justify-self: end; display: inline-flex; align-items: center; height: 24px; gap: 6px; padding-right: calc((var(--key-action-size) - var(--key-icon-size)) / 2); color: var(--key-status-color); font-size: 11px; line-height: 20px; white-space: nowrap; }
+.badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 .key-expiry { grid-column: 1; grid-row: 2; margin: 0; min-width: 0; padding-left: var(--key-text-inset); }
 .key-expiry dt { margin: 0; color: var(--ke-muted); font-size: 10px; line-height: 12px; }
-.key-expiry dd { display: flex; align-items: center; height: var(--key-action-size); margin: 0; color: var(--ke-text); font-size: 12px; line-height: 20px; font-variant-numeric: tabular-nums; white-space: nowrap; }
-/* The action hit areas and expiration value have the same height and center. */
-.key-actions { grid-column: 2; grid-row: 2; align-self: end; display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.key-expiry dd { display: flex; align-items: center; height: 24px; margin: 0; color: var(--ke-text); font-size: 12px; line-height: 20px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* Top-right actions share the title's height and vertical center. */
+.key-actions { grid-column: 2; grid-row: 1; align-self: start; display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
 .key-actions .icon-button { flex-basis: var(--key-action-size); width: var(--key-action-size); height: var(--key-action-size); min-height: var(--key-action-size); }
 .key-actions .icon { width: var(--key-icon-size); height: var(--key-icon-size); }
+.key-actions [data-action=toggle] { color: var(--key-status-color); background: color-mix(in srgb, var(--key-status-color) 8%, var(--ke-surface)); }
+.key-actions [data-action=toggle]:hover:not(:disabled) { color: var(--key-status-color); background: color-mix(in srgb, var(--key-status-color) 15%, var(--ke-surface)); }
 .empty { margin: 0; padding: 72px 16px; text-align: center; color: var(--ke-muted); font-size: 13px; }
 .notice { margin: 0 0 22px; padding: 12px 16px; border-radius: 12px; overflow-wrap: anywhere; }
 .error { background: color-mix(in srgb, var(--ke-red) 7%, var(--ke-surface)); color: var(--ke-red); font-size: 13px; }

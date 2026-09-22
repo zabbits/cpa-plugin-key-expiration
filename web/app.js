@@ -128,7 +128,9 @@ function render() {
       expiryValue.textContent = '永不过期';
     }
     expiry.append(element('dt', '到期时间'), expiryValue);
-    const actions = element('footer', undefined, 'key-actions');
+    const actions = element('div', undefined, 'key-actions');
+    actions.setAttribute('role', 'group');
+    actions.setAttribute('aria-label', 'Key 操作');
     for (const [action, text] of [['edit', '设置有效期'], ['toggle', key.policy.disabled ? '启用' : '禁用']]) {
       const button = element('button', undefined, 'icon-button');
       button.type = 'button';
@@ -137,11 +139,10 @@ function render() {
       button.dataset.action = action;
       button.dataset.id = key.id;
       button.disabled = busy || loading;
-      if (action === 'toggle') button.classList.add(key.policy.disabled ? 'enable' : 'danger');
       button.append(icon(action === 'edit' ? 'calendar' : key.policy.disabled ? 'play' : 'pause'));
       actions.append(button);
     }
-    card.append(header, badge, expiry, actions);
+    card.append(header, actions, expiry, badge);
     return card;
   });
   $('keys').replaceChildren(...cards);
